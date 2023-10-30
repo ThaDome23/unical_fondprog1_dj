@@ -1,6 +1,9 @@
 from time import sleep
+import json
 import requests as req
 import sys
+
+file = json.load(open("credentials.json"))
 
 req.packages.urllib3.disable_warnings() 
 
@@ -10,13 +13,14 @@ if len(sys.argv) < 2:
 
 name = './sol/'+sys.argv[1]
 
-user = '250564'
-passwd = '9sksaw'
+user = file['user']
+passwd = file['password']
 
 sess = req.Session()
 
 x = sess.post("https://prototypes.mat.unical.it/fondprog1/team/index.php",data={"cmd":"login","login":user,"passwd":passwd},verify=False)
 
+print(x.text)
 multipart_data = {
 
     'code[]':(name[6:],open(name,'rb').read().decode()),
