@@ -22,16 +22,19 @@ parser.add_argument('problem_name', help='name of the problem')
 
 args = parser.parse_args()
 
-change_credentials(args.username, args.password)
+if args.username != None:
+    change_credentials(args.username, args.password)
 
 file = json.load(open("credentials.json"))
+
 user = file['user']
 passwd = file['password']
 
+
+dj_url= 'https://prototypes.mat.unical.it/fondprog1/team/'
 sess = req.Session()
 
-x = sess.post("https://prototypes.mat.unical.it/fondprog1/team/index.php",
-                data={"cmd":"login","login":user,"passwd":passwd},verify=False)
+x = sess.post(dj_url+"index.php",data={"cmd":"login","login":user,"passwd":passwd},verify=False)
 
 multipart_data = {
     'code[]':(args.filename,open(args.filename,'rb').read().decode()),
@@ -40,5 +43,6 @@ multipart_data = {
     'submit':(None,'submit')
 }
 
-r = sess.post("https://prototypes.mat.unical.it/fondprog1/team/upload.php",files=multipart_data)
-#print(r.text)
+r = sess.post(dj_url+"upload.php",files=multipart_data)
+
+res = sess.get
