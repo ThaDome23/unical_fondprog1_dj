@@ -17,19 +17,22 @@ parser = argparse.ArgumentParser(description='Makes a python submission to domju
 parser.add_argument('--username',help='sets the username')
 parser.add_argument('--password',help='sets the password')
 
-parser.add_argument('filename', help='name of the file to submit')
-parser.add_argument('problem_name', help='name of the problem')
+parser.add_argument('filename', help='name of the file to submit', nargs='?', default=None)
+parser.add_argument('problem_name', help='name of the problem', nargs='?', default=None)
 
 args = parser.parse_args()
 
 if args.username != None:
     change_credentials(args.username, args.password)
+    print('credentials changed')
 
 file = json.load(open("credentials.json"))
 
 user = file['user']
 passwd = file['password']
 
+if args.filename == None or args.problem_name ==None:
+    exit()
 
 dj_url= 'https://prototypes.mat.unical.it/fondprog1/team/'
 sess = req.Session()
@@ -45,4 +48,4 @@ multipart_data = {
 
 r = sess.post(dj_url+"upload.php",files=multipart_data)
 
-res = sess.get
+sess.get(dj_url)
