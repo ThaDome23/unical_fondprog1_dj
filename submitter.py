@@ -3,43 +3,52 @@
 from time import sleep
 import json
 import requests as req
-import sys,argparse
-from termcolor import colored
+import argparse
+from bs4 import BeautifulSoup
+
+from rich.progress import (Progress,SpinnerColumn,TextColumn)
+
+step_progress = Progress(
+    TextColumn('Pending: '),
+    SpinnerColumn("aesthetic")
+)
+
+req.packages.urllib3.disable_warnings() 
 
 def change_credentials(u,p):
     j = {'user':u,'password':p}
     file = open('credentials.json','w')
     file.write(json.dumps(j))
 
-req.packages.urllib3.disable_warnings() 
+def create_parser():
 
-parser = argparse.ArgumentParser(description='Makes a python submission to domjudge hosted at unical')
+    parser = argparse.ArgumentParser(description='Makes a python submission to domjudge hosted at unical')
 
-parser.add_argument('--username',help='sets the username')
-parser.add_argument('--password',help='sets the password')
+    parser.add_argument('--username',help='sets the username')
+    parser.add_argument('--password',help='sets the password')
 
-parser.add_argument('filename', help='name of the file to submit', nargs='?', default=None)
-parser.add_argument('problem_name', help='name of the problem', nargs='?', default=None)
+    parser.add_argument('filename', help='name of the file to submit', nargs='?', default=None)
+    parser.add_argument('problem_name', help='name of the problem', nargs='?', default=None)
 
-args = parser.parse_args()
+    return parser.parse_args()
+
+args = create_parser()
 
 if args.username != None:
     change_credentials(args.username, args.password)
     print('credentials changed')
+    exit()
 
-file = json.load(open("credentials.json"))
-
-user = file['user']
-passwd = file['password']
+user,passwd= json.load(open("credentials.json")).values() #unpacking directly the whole dictionary
 
 dj_url= 'https://prototypes.mat.unical.it/fondprog1/team/'
-
+id = step_progress.add_task('')
 sess = req.Session()
 
-sess.post(dj_url+"index.php",data={"cmd":"login","login":user,"passwd":passwd},verify=False)
+sess.post(dj_url+"index.php", data={"cmd":"login","login":user,"passwd":passwd}, verify=False)
 
 if args.filename != None and args.problem_name !=None:
-
+    step_progress.start()
     multipart_data = {
         'code[]':(args.filename,open(args.filename,'rb').read().decode()),
         'probid': (None, args.problem_name),
@@ -50,31 +59,26 @@ if args.filename != None and args.problem_name !=None:
     sess.post(dj_url+"upload.php",files=multipart_data)
 
 while True:
-    sleep(1)
-    r = sess.get(dj_url)
 
-    from bs4 import BeautifulSoup
-
-    soup = BeautifulSoup(r.text,'html.parser')
-    try:
+    soup = BeautifulSoup(  sess.get(dj_url).text  , 'html.parser')
+    try: #got from analyzing the website
         result_url = soup.find(id='submitlist').find('tbody').find('tr').findAll('td')[3].find('a')['href']
-    except:
-        print('pending')
+    except: #case when the submission is still pending
+        sleep(0.5)
         continue
-    r = sess.get(dj_url+result_url)
 
-    soup = BeautifulSoup(r.text,'html.parser')
+    #because we need to enter in the specific submission url
+    soup = BeautifulSoup(  sess.get(dj_url+result_url).text  , 'html.parser')
 
-    compilation = soup.findAll('p')[2].text
     status = soup.findAll('p')[0].text
-
     s = status.split(' ')
-    print(compilation)
-    print(s[0],end=' ')
 
+    step_progress.stop()
+    step_progress.console.print('[green]DONE')
+    
+    color='green'
     if 'error' in s[1] or 'wrong' in s[1] or 'no-output' in s[1]:
-        print(colored(s[1],'red'))
-    else:
-        print(colored(s[1],'green'))
+        color = 'red'
 
+    step_progress.console.print(s[0]+' ['+color+']'+s[1])
     break  #exits the program
