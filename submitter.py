@@ -32,6 +32,13 @@ def create_parser():
 
     return parser.parse_args()
 
+def login(url)->req.Session:
+    sess = req.Session()
+    user,passwd= json.load(open("credentials.json")).values() #unpacking directly the whole dictionary
+
+    sess.post(url+"index.php", data={"cmd":"login","login":user,"passwd":passwd}, verify=False)
+
+
 args = create_parser()
 
 if args.username != None:
@@ -39,13 +46,11 @@ if args.username != None:
     print('credentials changed')
     exit()
 
-user,passwd= json.load(open("credentials.json")).values() #unpacking directly the whole dictionary
+id = step_progress.add_task('')
 
 dj_url= 'https://prototypes.mat.unical.it/fondprog1/team/'
-id = step_progress.add_task('')
-sess = req.Session()
 
-sess.post(dj_url+"index.php", data={"cmd":"login","login":user,"passwd":passwd}, verify=False)
+sess = login(dj_url+'index.php')
 
 if args.filename != None and args.problem_name !=None:
     step_progress.start()
