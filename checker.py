@@ -37,6 +37,10 @@ if args.problem_name != None:
     files = glob.glob(path+'/*')
     for f in files:
         os.remove(f)
+   
     shutil.copy(args.filename,path+'/'+args.problem_name+'.py')
-    print(['python3',get_path(),args.problem_name])
-    subprocess.run(['python3',get_path(),args.problem_name])
+
+    a = subprocess.run(['python3',get_path(),args.problem_name])
+
+    if a.returncode != 0:
+        exit(1)
