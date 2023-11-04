@@ -25,4 +25,4 @@ It open a web-browser page of the problem pdf hosted on domjudge by specifing a 
 
 (needs a working installation of kozajudge)
 
-Intended for usage with kozajudge, it needs the kozajudge path on the command line flag `--kozajudge_path` then if run it places the problem in the correct kozajudge directory and executes kozajudge.py. It also redirects the kozajudge output on the terminal
+Intended for usage with kozajudge, it needs the kozajudge path on the command line flag `--kozajudge_path` then if run it places the problem in the correct kozajudge directory and executes kozajudge.py. It also redirects the kozajudge output on the terminal.
