@@ -40,7 +40,7 @@ if args.problem_name != None:
    
     shutil.copy(args.filename,path+'/'+args.problem_name+'.py')
 
-    a = subprocess.run(['python3',get_path(),args.problem_name])
+    a = subprocess.run(['python3',get_path(),args.problem_name,'-i'])
 
     if a.returncode != 0:
         exit(1)
