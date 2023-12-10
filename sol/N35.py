@@ -10,4 +10,3 @@ while n!= 0:
     n = int(input())
 
 print(tot,end='')
-

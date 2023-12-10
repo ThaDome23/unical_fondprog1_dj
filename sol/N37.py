@@ -1,8 +1,5 @@
-
 cont = 0
-lista = []
-for i in range(100):
-    lista.append(input())
+lista = [input() for _ in range(100)]
 
 for c in ['a','e','i','o','u']:
     cont+= min(lista.count(c),1)

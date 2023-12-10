@@ -1,32 +1,26 @@
-status = 'none' ## status none->cresc->decresc altrimenti no
+decrescente = False 
 
-a = int(input())
-prec = 0
+prec = int(input())
+
+if prec == 0: a = 0
+else: a = int(input())
+
+if prec >= a: 
+    print('NO',end='') #caso in cui la stringa inizia in modo decrescente o uguale
+    exit()
 while a != 0:
+    
+    if prec > a and not decrescente:
+        decrescente = True
+    
+    if a == prec or (a>prec and decrescente): # se trovo due elementi uguali nella sequenza 
+        print('NO',end='')                    # oppure trovo due elementi crescenti quando 
+        exit()                                # la stringa è iniziata a decrescere
+
     prec = a
     a= int(input())
 
-    if a== 0:
-        break
-
-    if a == prec:
-        print('NO',end='')
-        exit()
-
-    if status == 'none' and a>prec :
-        status = 'cresc'
-    elif status == 'none' and a<prec :
-        print('NO',end='')
-        exit()
-
-    if a<prec and status == 'cresc':
-        status ='decresc'
-    
-    if a>prec and status=='decresc':
-        print('NO',end='')
-        exit()
-
-if status == 'decresc':
+if decrescente:
     print('SI',end='')
 else:
     print('NO',end='')
