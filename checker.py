@@ -16,6 +16,7 @@ def set_path(p):
 def get_path()->str:
     with open('path.json','r') as file:
         x = json.loads(file.read())['path']
+        print(x)
     return x
 
 def create_parser():
@@ -40,7 +41,7 @@ if args.problem_name != None:
    
     shutil.copy(args.filename,path+'/'+args.problem_name+'.py')
 
-    a = subprocess.run(['python3',get_path(),args.problem_name,'-i'])
+    a = subprocess.run(['py',get_path(),args.problem_name,'-i'])
 
     if a.returncode != 0:
         exit(1)
